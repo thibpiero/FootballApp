@@ -14,6 +14,19 @@ dffoot$Assists = as.integer(dffoot$Assists)
 
 str(dffoot)
 
+sum((dffoot$Name == "Su\xe1rez, Luis")== TRUE)
+
+unique(dffoot$Name)
+  
+dffoot <- dffoot %>%
+  mutate(Name=replace(Name, Name == "Cristiano Ronaldo" ,"Ronaldo, Cristiano"))
+#%>%
+#  mutate(Name=replace(Name, Name == "Su\xe1rez, Luis" ,"Suarez, Luis")) %>%
+#  mutate(Name=replace(Name, Name == "g\xe1ero, Sergio" ,"Aguero, Sergio")) %>%
+#  mutate(Name=replace(Name, Name == "Higua\xe1n, Gonzalo" ,"Higuain, Gonzalo")) %>%
+#  mutate(Name=replace(Name, Name == "S<e1>nchez, Alexis	" ,"Sanchez, Alexis")) %>%
+#  as.data.frame()
+
 Teamstat <- dffoot %>%
   group_by(Team)%>%
   summarise(teamgoals = sum(Goals, na.rm = TRUE), teamassists = sum(Assists, na.rm = TRUE), teamredcards = sum(Red_Cards, na.rm = TRUE),
@@ -35,3 +48,40 @@ Seasonstat <- dffoot%>%
   group_by(Season)%>%
   summarise(seasongoals = sum(Goals, na.rm = TRUE), seasonassists = sum(Assists, na.rm = TRUE), seasonredcards = sum(Red_Cards, na.rm = TRUE),
             seasonyellowcards = sum(Yellow_Cards, na.rm = TRUE))
+
+
+
+
+top20goals <- Playerstat %>%
+  arrange(desc(playergoals)) %>%
+  head(20)
+
+top20stats <- dffoot[c(1,3,7)] %>%
+  filter(Name %in% top20goals$Name)%>%
+    group_by(Name, Season)%>%
+    summarise_all(funs(sum), na.rm= TRUE)
+
+ggplot(top20stats,aes(x = Season, y = Goals, color = Name, group= Name))+
+  geom_point()+
+  geom_line()
+
+
+ggplot(top20stats)+
+  geom_point(mapping = aes(x = Name, y = Goals, color = Name))
+
+
+top20goalsAccrosseason <- top20stats%>%
+  spread(key = Season, value = Goals)
+
+
+
+
+
+
+
+
+
+
+
+
+
