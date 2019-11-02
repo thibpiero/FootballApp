@@ -65,14 +65,22 @@ top20stats <- dffoot[c(1,3,7)] %>%
     group_by(Name, Season)%>%
     summarise_all(funs(sum), na.rm= TRUE)
 
+plottop20 <- ggplot(top20stats,aes(x = Season, y = Goals, color = Name, group= Name))+
+    geom_point()+
+    geom_line()
+
 # Define UI for application that draws a histogram
 ui <- fluidPage(
     
-    dataTableOutput("dynamic")
+    dataTableOutput("dynamic"),  
+    plotOutput("plot")
+
 )
 server <- function(input, output, session) {
     
-    output$dynamic <- renderDataTable(top20goals, options = list(pageLength = 5))
+    output$dynamic <- renderDataTable(top20goalsAccrosseason, options = list(pageLength = 5))
+    output$plot <- renderPlot(plottop20)
+    
 }
 
 # Run the application 
